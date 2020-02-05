@@ -8,12 +8,10 @@ class RidisClient():
         self.port = port
         self.client_conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_conn.connect((self.host, self.port))
-        print("rishabh", self.client_conn, "rishabh")
 
     def client_set(self, query_str=''):
         print("The Query String is ", query_str)
         v = self.client_conn.send(str.encode(query_str))
-        print("surya", v, "surya")
         response = self.client_conn.recv(1024)
         print(repr(response))
 

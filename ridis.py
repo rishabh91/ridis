@@ -5,7 +5,6 @@ class Ridis():
 
     def __init__(self):
         self.storage = {}
-        self.lru = []
 
     def get(self, key):
         if key not in self.storage:
@@ -25,7 +24,6 @@ class Ridis():
             val.append(value)
             val.append(time.time())
             self.storage[key] = val
-            self.lru.append(key)
             return "{} has been set".format(key)
         else:
             current_timestamp = time.time()
@@ -36,7 +34,6 @@ class Ridis():
                 val.append(value)
                 val.append(time.time())
                 self.storage[key] = val
-                self.lru.append(key)
                 return "{} has been set".format(key)
             else:
                 return "The Key already exists try UPDATE instead"
