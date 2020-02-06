@@ -21,18 +21,19 @@ class RidisServer():
             Thread(target=self.listener, args=([conn])).start()
 
     def clear_keys(self, time_interval):
-        time.sleep(time_interval)
-        print("Clear keys called")
-        keys = self.rid_obj.get_all_keys()
-        for key in keys:
+        while True:
+          time.sleep(time_interval)
+          print("Clear keys called")
+          keys = self.rid_obj.get_all_keys()
+          for key in keys:
             print(key)
             current_timestamp = time.time()
             ttl = self.rid_obj.storage[key][1]
             if current_timestamp - ttl > 360:
-                del self.rid_obj.storage[key]
-                print("Removed the key {} from Ridis as it expired".format(key))
+              del self.rid_obj.storage[key]
+              print("Removed the key {} from Ridis as it expired".format(key))
             else:
-                continue
+              continue
 
     def listener(self, conn):
         while True:
