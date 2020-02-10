@@ -1,6 +1,8 @@
 import socket
 import ridis
+import datetime
 import time
+import logging
 from threading import Thread
 
 
@@ -10,7 +12,7 @@ class RidisServer():
         self.rid_obj = ridis.Ridis()
         self.host = host
         self.port = port
-        Thread(target=self.clear_keys, args=([365])).start()
+        Thread(target=self.clear_keys, args=([75])).start()
 
     def start_server(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,15 +25,15 @@ class RidisServer():
     def clear_keys(self, time_interval):
         while True:
           time.sleep(time_interval)
-          print("Clear keys called")
+          logging.info("Clear keys called")
           keys = self.rid_obj.get_all_keys()
           for key in keys:
             print(key)
-            current_timestamp = time.time()
+            current_timestamp = datetime.datetime.now()
             ttl = self.rid_obj.storage[key][1]
-            if current_timestamp - ttl > 360:
+            if current_timestamp >= ttl:
               del self.rid_obj.storage[key]
-              print("Removed the key {} from Ridis as it expired".format(key))
+              logging.info("Removed the key {} from Ridis as it expired".format(key))
             else:
               continue
 
@@ -48,8 +50,13 @@ class RidisServer():
             elif 'SET' in data:
                 data = data.split(' ')
                 print(data)
-                key, value = data[1], data[2]
-                val = self.rid_obj.set(key, value)
+                if len(data) == 4:
+                    key, value, ttl = data[1], data[2], data[3]
+                    val = self.rid_obj.set(key, value, int(ttl))
+                else:
+                    key, value = data[1], data[2]
+                    val = self.rid_obj.set(key, value)
+
             elif 'KEY *' in data:
                 val = self.rid_obj.get_all_keys()
                 print(val)

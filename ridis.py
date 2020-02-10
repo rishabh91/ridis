@@ -1,5 +1,5 @@
-import time
-
+import datetime
+import config
 
 class Ridis():
 
@@ -10,29 +10,31 @@ class Ridis():
         if key not in self.storage:
             return "Didnt find the key"
         else:
-            current_timestamp = time.time()
-            ttl = current_timestamp - self.storage[key][1]
-            if ttl > 360:
+            current_timestamp = datetime.datetime.now()
+            ttl = self.storage[key][1]
+            if current_timestamp >= ttl:
                 del self.storage[key]
                 return "The Key Expired"
             else:
                 return self.storage[key][0]
 
-    def set(self, key, value):
+    def set(self, key, value, ttl=config.TTL):
         if key not in self.storage:
             val = []
             val.append(value)
-            val.append(time.time())
+            current_time = datetime.datetime.now()
+            ttl = datetime.timedelta(seconds=ttl)
+            val.append(current_time + ttl)
             self.storage[key] = val
             return "{} has been set".format(key)
         else:
-            current_timestamp = time.time()
-            ttl = current_timestamp - self.storage[key][1]
-            if ttl > 360:
+            current_timestamp = datetime.datetime.now()
+            ttl = self.storage[key][1]
+            if current_timestamp >= ttl:
                 del self.storage[key]
                 val = []
                 val.append(value)
-                val.append(time.time())
+                val.append(current_timestamp + datetime.timedelta(seconds=ttl))
                 self.storage[key] = val
                 return "{} has been set".format(key)
             else:
@@ -40,3 +42,5 @@ class Ridis():
 
     def get_all_keys(self):
         return [*self.storage]
+
+
