@@ -12,7 +12,7 @@ class RidisServer():
         self.rid_obj = ridis.Ridis()
         self.host = host
         self.port = port
-        Thread(target=self.clear_keys, args=([75])).start()
+        Thread(target=self.clear_keys, args=([360])).start()
 
     def start_server(self):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,7 +31,7 @@ class RidisServer():
             print(key)
             current_timestamp = datetime.datetime.now()
             ttl = self.rid_obj.storage[key][1]
-            if current_timestamp >= ttl:
+            if current_timestamp > ttl:
               del self.rid_obj.storage[key]
               logging.info("Removed the key {} from Ridis as it expired".format(key))
             else:
@@ -66,6 +66,5 @@ class RidisServer():
 
             conn.send(str.encode(val))
 
-
-obj = RidisServer()
-obj.start_server()
+if __name__ == '__main__':
+    RidisServer().start_server()

@@ -15,12 +15,12 @@ class RidisClient():
         response = self.client_conn.recv(1024)
         logging.info(repr(response))
 
+
     def client_get(self, query_string):
         logging.info("The Query String is {}".format(query_string))
         self.client_conn.send(str.encode(query_string))
         response = self.client_conn.recv(1024)
         logging.info(repr(response))
-
 
 if __name__ == '__main__':
     client = RidisClient()

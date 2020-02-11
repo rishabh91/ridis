@@ -12,7 +12,7 @@ class Ridis():
         else:
             current_timestamp = datetime.datetime.now()
             ttl = self.storage[key][1]
-            if current_timestamp >= ttl:
+            if current_timestamp > ttl:
                 del self.storage[key]
                 return "The Key Expired"
             else:
@@ -30,7 +30,7 @@ class Ridis():
         else:
             current_timestamp = datetime.datetime.now()
             ttl = self.storage[key][1]
-            if current_timestamp >= ttl:
+            if current_timestamp > ttl:
                 del self.storage[key]
                 val = []
                 val.append(value)
